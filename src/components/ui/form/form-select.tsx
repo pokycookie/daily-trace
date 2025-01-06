@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Control, FieldPath, FieldValues, RegisterOptions, useController } from 'react-hook-form'
 
 export interface IFormSelectOption<T> {
@@ -69,7 +69,6 @@ export function FormSelect<
   ) => {
     onChange(v)
     others.onChange?.(e, v, reason)
-    console.log(v)
     if (reason === 'selectOption') {
       onChange(v)
     }
@@ -79,10 +78,6 @@ export function FormSelect<
       // onCreate?.(newOption)
     }
   }
-
-  useEffect(() => {
-    console.log(value)
-  }, [value])
 
   return (
     <Autocomplete
