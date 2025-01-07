@@ -11,7 +11,7 @@ export interface ITraceAttribute {
   id: number
   traceId: number
   type: string
-  attribute: string
+  name: string
 }
 
 export interface ITraceTag {
@@ -22,7 +22,7 @@ export interface ITraceTag {
 
 export interface ITag {
   id: number
-  tag: string
+  name: string
 }
 
 export const db = new Dexie('trace') as Dexie & {
@@ -36,5 +36,5 @@ db.version(1).stores({
   traces: '++id, date',
   traceAttributes: '++id',
   traceTags: '++id',
-  tags: '++id, tag',
+  tags: '++id, name',
 })
