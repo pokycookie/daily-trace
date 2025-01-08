@@ -38,7 +38,7 @@ export function Timeline<T extends ITimelineData>({
     <Stack width={1}>
       {groupedData.map((curr, i) => {
         return (
-          <Stack direction="row" width={1}>
+          <Stack direction="row" width={1} key={curr.date.getTime()}>
             {/* Left */}
             <Stack
               key={i}
