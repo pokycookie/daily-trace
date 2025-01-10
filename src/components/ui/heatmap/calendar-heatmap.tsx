@@ -1,4 +1,4 @@
-import { Box, darken, lighten, Stack, Tooltip, useTheme } from '@mui/material'
+import { Box, darken, lighten, Stack, Tooltip, Typography, useTheme } from '@mui/material'
 import dayjs from 'dayjs'
 import { useCallback, useMemo } from 'react'
 
@@ -15,19 +15,25 @@ interface ICellData {
 interface ICalendarHeatmapProps {
   data: ICalenderHeatmapData[]
   endDate: Date
+  cellSize?: number
   color?: string
   thresholds?: number[]
   customFn?: (count: number) => string
+  onClick?: (date: Date) => void
 }
 
-const defaultThresholds = [1, 2, 3, 4]
+const DEFAULT_CELL_SIZE = 15
+const DEFAULT_THREASHOLDS = [1, 2, 3, 4]
+const WEEKDAY = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
 export function CalendarHeatmap({
   data,
   endDate,
   color: customColor,
-  thresholds = defaultThresholds,
+  thresholds = DEFAULT_THREASHOLDS,
+  cellSize = DEFAULT_CELL_SIZE,
   customFn,
+  onClick,
 }: ICalendarHeatmapProps) {
   const theme = useTheme()
 
@@ -86,31 +92,71 @@ export function CalendarHeatmap({
   )
 
   return (
-    <Stack spacing="2px" p={1}>
-      {heatmapArr.map((line, i) => (
-        <Stack key={i} direction="row" spacing="2px">
-          {line.map((cell, j) =>
-            cell.date ? (
-              <Tooltip
-                key={j}
-                title={`${dayjs(cell.date).format('YYYY-MM-DD')}: ${cell.count}개`}
-                disableInteractive
-              >
-                <Box
-                  flex={1}
-                  borderRadius={1}
-                  border={1}
-                  borderColor="transparent"
-                  bgcolor={colorSelector(cell.count)}
-                  sx={{ cursor: 'pointer', aspectRatio: 1, ':hover': { borderColor: 'black' } }}
-                />
-              </Tooltip>
-            ) : (
-              <Box key={j} border={1} borderColor="transparent" flex={1} sx={{ aspectRatio: 1 }} />
-            )
-          )}
+    <Stack spacing={3}>
+      <Stack direction="row" spacing={2}>
+        {/* Weekday info */}
+        <Stack spacing="2px">
+          {WEEKDAY.map((week, i) => (
+            <Stack
+              width={cellSize}
+              height={cellSize}
+              justifyContent="center"
+              alignItems="center"
+              overflow="hidden"
+              flexShrink={0}
+              key={i}
+            >
+              <Typography variant="caption" fontSize={cellSize * 0.8}>
+                {week}
+              </Typography>
+            </Stack>
+          ))}
         </Stack>
-      ))}
+
+        {/* Cell area */}
+        <Stack spacing="2px" sx={{ overflowX: 'auto' }}>
+          {heatmapArr.map((line, i) => (
+            <Stack key={i} direction="row" spacing="2px">
+              {line.map((cell, j) =>
+                cell.date ? (
+                  <Tooltip
+                    key={j}
+                    title={`${dayjs(cell.date).format('YYYY-MM-DD')}: ${cell.count}개`}
+                    disableInteractive
+                  >
+                    <Box
+                      borderRadius={1}
+                      width={cellSize}
+                      height={cellSize}
+                      flexShrink={0}
+                      bgcolor={colorSelector(cell.count)}
+                      onClick={() => onClick?.(cell.date!)}
+                      sx={{ cursor: 'pointer', ':hover': { border: 1 } }}
+                    />
+                  </Tooltip>
+                ) : (
+                  <Box key={j} width={cellSize} height={cellSize} flexShrink={0} />
+                )
+              )}
+            </Stack>
+          ))}
+        </Stack>
+      </Stack>
+
+      {/* Info */}
+      <Stack direction="row" spacing="2px" justifyContent="flex-start" display="none">
+        {thresholds.map((threshold, i) => (
+          <Tooltip key={i} title={`${threshold} 이상`} disableInteractive>
+            <Box
+              width={cellSize}
+              height={cellSize}
+              borderRadius={1}
+              bgcolor={colorSelector(threshold)}
+              sx={{ cursor: 'pointer' }}
+            />
+          </Tooltip>
+        ))}
+      </Stack>
     </Stack>
   )
 }

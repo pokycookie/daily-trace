@@ -16,7 +16,7 @@ export default function HeatmapView() {
   }, [traces])
 
   return (
-    <Box width={1000}>
+    <Box p={4}>
       <CalendarHeatmap data={data} endDate={new Date()} />
     </Box>
   )
